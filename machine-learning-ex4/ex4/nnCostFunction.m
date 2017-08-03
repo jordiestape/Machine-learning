@@ -63,10 +63,10 @@ Theta2_grad = zeros(size(Theta2));
 %
 
 % Add column of 0 to X.
-X = [ones(m,1) X]
+X = [ones(m,1) X];
 
 % Changes y to change from labels -> (1-10) vectors
-yVec = eye(num_labels)
+yVec = eye(num_labels);
 y = yVec(y,:)
 
 % Network H() -> a3 (output)
@@ -83,20 +83,27 @@ J = (1 / m) .* sum(sum(aux))
 J = J + (lambda/(2*m)).*(sum(sum(Theta1(:,2:end).^2))+sum(sum(Theta2(:,2:end).^2)))
 
 
+% Prepare Delta Accumulators (set them to 0)
 AccDelta1 = 0;
 AccDelta2 = 0;
 
+% Start calculating the backpropagation by outputs:
 delta3 = a3 - y;
 
+% Calculate Layer 2 by backpropagation
 delta2 = delta3 * Theta2 .* [ones(m,1), sigmoidGradient(a1*Theta1')];
 delta2 = delta2(:,2:end);
 
+% Get acc values
 AccDelta1 = AccDelta1 + delta2' * a1;
 AccDelta2 = AccDelta2 + delta3' * a2;
+
+% Get gradient results
 
 Theta1_grad = (1/m) .* AccDelta1;
 Theta2_grad = (1/m) .* AccDelta2;
 
+% Regularization
 Theta1_grad = Theta1_grad + (lambda/m) * [zeros(size(Theta1, 1), 1) Theta1(:, 2:end)];
 Theta2_grad = Theta2_grad + (lambda/m) * [zeros(size(Theta2, 1), 1) Theta2(:, 2:end)];
 
